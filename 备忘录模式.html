@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>备忘录模式</title>
+</head>
+<body>
+    <p>场景：网站产品列表页中，点击按钮进行前后翻页。如果当用户点击下一页后重复点击了上一页的按钮，那么就会触发两次请求。</p>
+    <p>因为上一页的数据已经浏览过了，只需要将浏览后的当前页面数据存储起来，后续用户查看时根据页码来进行匹配</p>
+    <script>
+        // Page 备忘录类
+        const Page = function () {
+            // 信息缓存对象
+            const cache = {};
+            return function (pageNum, fn) {
+                if (cache[pageNum]) {
+                    // 如果缓存存在该数据，直接恢复该页的状态
+                    showPage(pageNum, cache[pageNum])
+                    fn && fn() // 执行成功回调
+                } else {
+                    // ajax 请求
+                    // ...
+                    cache[pageNum] = res.data // 存入缓存
+                    fn && fn() // 执行成功回调
+                }
+            }
+        }
+    </script>
+</body>
+</html>
