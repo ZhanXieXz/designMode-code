@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>状态模式</title>
+</head>
+<body>
+    <div>
+        <p>状态模式： 当一个对象内部状态发生改变，导致行为的改变，看起来像是改变了对象。
+            例如当某个方法中出现多个条件判读，使用if/else或者switch/case代码也会非常的冗余</p>
+        <img src="./image/状态模式-1.png" alt="" width="400" height="400">
+        上面的情况非常常见，甚至会出现一些组合条件，比如当result === 1 && result === 2才执行的动作。
+        可以通过状态对象来解决
+    </div>
+    <script>
+        const ResultState = function () {
+            // 判断结果保留在内部状态中
+            const States = {
+                state1: function () {
+                    console.log('第一种结果')
+                },
+                state2: function () {
+                    console.log('第二种结果')
+                },
+                state3: function () {
+                    console.log('第三种结果')
+                },
+                state4: function () {
+                    console.log('第四种结果')
+                },
+            }
+            // 获取某种状态并执行对应方法
+            function show (result) {
+                States['state' + result] &&States['state' + result]()
+            }
+            return {
+                show
+            }
+        }()
+        ResultState.show(4) // 第四种结果
+    </script>
+</body>
+</html>

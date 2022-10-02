@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模版方法模式</title>
+    <style>
+        .dialog {
+            border: 1px solid sandybrown;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        模版方法模式：父类定义一系列操作算法骨架，将实现步骤延迟到子类身上，子类继承后可不重写父类的前提下进行拓展自身的功能。
+        例如：项目中需要使用弹窗，多个页面中每个弹窗的样式有所区别。首先写好一个框架，子孙后台基于这个框架进行拓展即可。
+    </div>
+    <hr/>
+    <script>
+        var Dialog = function (data) {
+            if (!data) {
+                return false
+            }
+            this.content = data.content; // 设置内容
+            this.panel = document.createElement('div'); // 创建面板组件
+            this.contextNode = document.createElement('p'); // 创建提示内容组件
+            this.confirmBtn = document.createElement('button'); // 创建确定按钮组件
+            this.closeBtn = document.createElement('span'); // 创建关闭按钮组件
+            this.panel.className = 'dialog'; // 提示面板添加类
+            this.closeBtn.className = 'a-close'; // 关闭按钮添加类
+            this.confirmBtn.className = 'a-confirm'; // 确定按钮添加类
+            this.confirmBtn.innerHTML = data.confirmText || 'confirm';
+            this.closeBtn.innerHTML = data.closeText || 'confirm';
+            this.contextNode.innerHTML = this.content;
+            this.success = data.success || function () {};
+            this.fail = data.fail || function () {}
+        };
+        Dialog.prototype =  {
+            // 创建方法
+            init : function () {
+                // 生成提示框
+                this.panel.appendChild(this.closeBtn);
+                this.panel.appendChild(this.confirmBtn);
+                this.panel.appendChild(this.contextNode);
+                // 插入页面
+                document.body.appendChild(this.panel);
+                // 绑定事件
+                this.bindEvent();
+                this.show();
+            },
+            bindEvent: function () {
+                var me = this;
+                this.closeBtn.onclick = function () {
+                    me.fail();
+                    me.hide();
+                }
+                this.confirmBtn.onclick = function () {
+                    me.success();
+                    me.hide();
+                }
+            },
+            hide: function () {
+                this.panel.style.display = 'none'
+            },
+            show: function () {
+                this.panel.style.display = 'block'
+            }
+        }
+
+        // 标题提示框
+        var TitleDialog = function (data) {
+            Dialog.call(this,data);
+            this.titleText = data.title || 'this is a title';
+            this.titleNode = document.createElement('h3');
+            this.titleNode.innerHTML = this.titleText;
+
+        }
+        TitleDialog.prototype = new Dialog();
+        TitleDialog.prototype.init = function () {
+            this.panel.insertBefore(this.titleNode, this.panel.firstChild);
+            Dialog.prototype.init.call(this);
+        }
+
+        new TitleDialog({
+            content: '这是一段文字',
+            confirmText: '确认',
+            closeText: '关闭',
+        }).init()
+
+        // 按钮在右侧
+        var RightDialog = function (data) {
+            Dialog.call(this, data);
+            console.log(this.confirmBtn)
+            this.confirmBtn.className = this.confirmBtn.className + ' right';
+        }
+        RightDialog.prototype = new Dialog();
+        new RightDialog({
+            content: '这是一段文字',
+            confirmText: '确认',
+            closeText: '关闭',
+        }).init()
+    </script>
+</body>
+</html>

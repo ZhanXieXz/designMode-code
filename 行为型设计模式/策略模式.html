@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>策略模式</title>
+</head>
+<body>
+    <div>
+        <p>
+            策略模式：将定义的一组算法封装起来，是相互之间可以替换封装的算法具有一定独立性，不会随客户端变化而变化。
+        </p>
+        <p>
+            例如：电商网站中，每个商品参加的活动不同吗。有些参与满300减30，有些满99减50，有些单件9折等等...
+        </p>
+        <p>
+            如果每一种情况都写成一个函数，那么代码量就会很庞大，跟之前的状态模式很相似的策略模式就可以解决上述的问题了
+        </p>
+    </div>
+    <script>
+        // 价格策略对象
+        const PriceStrategy = function () {
+            // 内部算法对象
+            const Stragtegy = {
+                return30 : function (price) { // 100 返 30
+                    return +price + parseInt(price / 100) * 30
+                },
+                return50 : function (price) { // 100 返 50
+                    return +price + parseInt(price / 100) * 50
+                },
+                parcent90 : function(price) { // 9折
+                    return price * 100 * 90 / 10000
+                },
+                parcent50 : function(price) { // 9折
+                    return price * 100 * 50 / 10000
+                }
+            }
+            return function(algorithm, price) {
+                return Stragtegy[algorithm] && Stragtegy[algorithm](price)
+            }
+        }()
+        const price = PriceStrategy('return50', '100')
+        console.log('price', price);
+    </script>
+</body>
+</html>

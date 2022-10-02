@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>观察者模式</title>
+</head>
+<body>
+    <div>
+        发布-订阅者模式，解决主体对象与观察者之间的耦合关系
+    </div>
+    <script>
+        const Observer = (function() {
+            //  防止消息队列暴漏而被篡改，将消息容器作为静态私有变量保存
+            let _message = {};
+            return {
+                regist: function (type, fn) {
+                    if (typeof _message[type] === 'undefined') {
+                        //  将动作推入到该消息对应的动作执行队列
+                        _message[type] = [fn];
+                    } else {
+                        _message[type].push(fn);
+                    }
+                }, // 注册信息接口
+
+                fire: function (type, args) {
+                    //   如果没有被注册，直接返回
+                    if (!_message[type]) {
+                        return;
+                    };
+                    let events = {
+                        type: type,
+                        args: args || {}
+                    },
+                    i = 0,
+                    len = _message[type].length;
+                    for (;i < len; i++) {
+                        _message[type][i].call(this, events); 
+                    }
+                }, // 发布信息接口
+
+                remove: function (type, fn) {
+                    if (_message[type] instanceof Array) {
+                        // 从最后一个动作遍历
+                        let i = _message[type].length - 1;
+                        for (; i >= 0; i--) {
+                            __message[type][i] === fn && __message[type].splice(i,1);
+                        }
+                    }
+                } // 移除信息接口
+            }
+        })()
+        Observer.regist('test', function (e) {
+            console.log(e.type, e.args.msg);
+        })
+
+        Observer.fire('test', {msg: ' this is a msg'})
+        Observer.fire('test', {msg: ' this is a msg 02'})
+
+        const Student = function (result) {
+            let that = this;
+            that.result = result;
+            that.say = function () {
+                console.log(that.result);
+            }
+        }
+        Student.prototype.answer = function (question) {
+            // 注册参数问题
+            Observer.regist(question, this.say);
+        }
+
+        const Teacher = function () {}
+        Teacher.prototype.ask = function (question) {
+            console.log('问题是：', question);
+            Observer.fire(question);
+        }
+
+
+        const student1 = new Student('我是第一位学生');
+        const student2 = new Student('我是第二位学生');
+        const student3 = new Student('我是第三位学生');
+
+        student1.answer('什么设计模式？')
+        student2.answer('什么观察者模式？')
+        student3.answer('什么状态模式？')
+
+        const teacher = new Teacher()
+        teacher.ask('什么设计模式？')
+        teacher.ask('什么观察者模式？')
+        teacher.ask('什么状态模式？')
+    </script>
+</body>
+</html>
