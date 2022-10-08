@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>惰性模式</title>
+</head>
+<body>
+    <p>减少代码执行时重复分支判断，通过重定义屏蔽原分支的判断</p>
+    <script>
+        const A = {};
+        // 第一种方法，页面加载即执行。会损耗一些资源
+        A.on = function (dom, type, fn) {
+            // 如果支持addEventListener方法
+            if (document.addEventListener) {
+                return function (dom, type, fn) {
+                    dom.addEventListener(type, fn, false)
+                }
+            }
+            // 如果支持attachEvent方法（IE）
+             else if (document.attachEvent) {
+                return function (dom, type, fn) {
+                    dom.attachEvent('on' + type, fn)
+                }
+             } else {
+                // 返回新定义方法
+                return function (dom, type, fn) {
+                    dom['on'+type] = fn
+                }
+             }
+        }()
+        console.log(A.on) 
+        // chrome -- ƒ (dom, type, fn) { dom.addEventListener(type, fn, false) }
+        //function (dom, type, fn) { dom.attachEvent('on' + type, fn) } 在ie执行时定义A的const要改成var
+
+        // 第二种方法 调用才执行
+        A.on_1 = function (dom, type, fn) {
+            // 如果支持addEventListener方法
+            if (document.addEventListener) {
+                A.on_1 = function (dom, type, fn) {
+                    dom.addEventListener(type, fn, false)
+                }
+            }
+            // 如果支持attachEvent方法（IE）
+             else if (document.attachEvent) {
+                A.on_1 = function (dom, type, fn) {
+                    dom.attachEvent('on' + type, fn)
+                }
+             } else {
+                // 返回新定义方法
+                A.on_1 = function (dom, type, fn) {
+                    dom['on'+type] = fn
+                }
+             }
+             // 执行重定义的on方法
+             A.on_1(dom, type, fn)
+        }
+
+        A.on_1(document.body, 'click',function () {
+            console.log(A.on_1)
+        })
+    </script>
+</body>
+</html>
